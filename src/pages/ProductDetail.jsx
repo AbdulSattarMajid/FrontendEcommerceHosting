@@ -56,8 +56,7 @@ const ProductDetail = () => {
         {/* Product Image */}
         <div className="w-full max-w-[520px] h-[520px] bg-gray-100 rounded-xl shadow-lg flex items-center justify-center overflow-hidden mx-auto">
           <img
-            src={product.image}
-            alt={product.name}
+            src={`${backendUrl}/${product.image?.startsWith('uploads') ? product.image : 'uploads/' + product.image}`} alt={product.name}
             className="max-w-full max-h-full object-contain transition-transform duration-300 hover:scale-105"
           />
         </div>

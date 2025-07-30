@@ -15,8 +15,7 @@ const ProductCard = ({ product }) => {
       >
         <div className="w-full h-44 overflow-hidden rounded-xl mb-3">
           <img
-            src={product.image}
-            alt={product.name}
+            src={`${backendUrl}/${product.image?.startsWith('uploads') ? product.image : 'uploads/' + product.image}`} alt={product.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
