@@ -3,9 +3,14 @@ import { FiHeart } from "react-icons/fi";
 import Cart from "../../Images/exploreImages/cart.svg";
 import StarRating from "./StarRating";
 
+const backendUrl = import.meta.env.VITE_API_BASE_URL;
+
 const ProductCard = ({ product }) => {
-  const backendUrl = import.meta.env.VITE_API_BASE_URL;
   const randomRating = (Math.random() * 2 + 3).toFixed(1); // For demonstration only
+
+  const imageUrl = product.image?.startsWith("http")
+    ? product.image
+    : `${backendUrl}/${product.image.startsWith("uploads") ? product.image : "uploads/" + product.image}`;
 
   return (
     <div className="bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 p-4 relative group">
@@ -16,7 +21,8 @@ const ProductCard = ({ product }) => {
       >
         <div className="w-full h-44 overflow-hidden rounded-xl mb-3">
           <img
-            src={`${backendUrl}/${product.image?.startsWith('uploads') ? product.image : 'uploads/' + product.image}`} alt={product.name}
+            src={imageUrl}
+            alt={product.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
