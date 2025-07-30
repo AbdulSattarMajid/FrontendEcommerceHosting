@@ -4,7 +4,7 @@ import { ShoppingCart, Menu, X } from "lucide-react";
 import ProfileDropdown from "./ProfileDropdown";
 import axios from "axios";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const backendUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const Navbar = ({ user, setUser }) => {
   const [count, setCount] = useState(4);
