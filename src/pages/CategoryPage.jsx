@@ -18,6 +18,7 @@ const Products = () => {
         ]);
 
         if (productsRes.data.success) setProducts(productsRes.data.products);
+        console.log(productsRes)
         if (categoriesRes.data.success) setCategories(categoriesRes.data.categories);
       } catch (err) {
         console.error("Failed to fetch data:", err);
