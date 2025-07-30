@@ -4,6 +4,7 @@ import Cart from "../../Images/exploreImages/cart.svg";
 import StarRating from "./StarRating";
 
 const ProductCard = ({ product }) => {
+  const backendUrl = import.meta.env.VITE_API_BASE_URL;
   const randomRating = (Math.random() * 2 + 3).toFixed(1); // For demonstration only
 
   return (
