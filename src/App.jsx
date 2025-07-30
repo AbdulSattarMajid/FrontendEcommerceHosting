@@ -18,7 +18,7 @@ import Contact from "./pages/Contact";
 import Navbar from "./Components/landingPageComponents/Navbar";
 import ForgotPassword from "./Components/authComponents/ForgetPassword";
 import ResetPassword from "./Components/authComponents/ResetPassword";
-import CartPage from "./pages/Cartpage";
+import CartPage from "./pages/CartPage";
 
 const backendUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
