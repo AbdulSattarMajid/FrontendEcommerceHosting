@@ -15,7 +15,7 @@ import Profile from "./pages/Profile";
 import Contact from "./pages/Contact";
 
 // Components
-import Navbar from "./Components/LandingPageComponents/Navbar";
+import Navbar from "./Components/landingPageComponents/Navbar";
 import ForgotPassword from "./Components/authComponents/ForgetPassword";
 import ResetPassword from "./Components/authComponents/ResetPassword";
 import Cart from "./pages/Cart";
