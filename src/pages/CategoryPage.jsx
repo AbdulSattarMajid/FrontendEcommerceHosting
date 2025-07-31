@@ -7,7 +7,7 @@ const Products = ({user}) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
-  const backendUrl = import.meta.env.VITE_API_BASE_URL;
+  const backendUrl = import.meta.env.VITE_API_BASE_URL || "https://backendecommercehosting.onrender.com";
 
 useEffect(() => {
   const fetchData = async () => {
