@@ -3,11 +3,12 @@ import axios from "axios";
 
 const SellerOrdersReceived = () => {
   const [orders, setOrders] = useState([]);
+  const backendUrl = import.meta.env.VITE_API_BASE_URL ;
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/seller/orders-received", { withCredentials: true });
+        const res = await axios.get(`${backendUrl}/api/seller/orders-received`, { withCredentials: true });
         setOrders(res.data.orders);
       } catch (err) {
         console.error("Failed to fetch seller orders:", err);
