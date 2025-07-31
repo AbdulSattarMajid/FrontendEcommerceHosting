@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const CustomerOrders = () => {
   const [orders, setOrders] = useState([]);
+const backendUrl = import.meta.env.VITE_API_BASE_URL ;
 
   useEffect(() => {
     fetchOrders();
@@ -10,7 +11,7 @@ const CustomerOrders = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/orders/my-orders", {
+      const res = await axios.get(`${backendUrl}/api/orders/my-orders`, {
         withCredentials: true,
       });
       setOrders(res.data.orders || []);
@@ -21,7 +22,7 @@ const CustomerOrders = () => {
 
   const handleCancel = async (id) => {
     try {
-      const res = await axios.put(`http://localhost:5000/api/orders/cancel/${id}`, {}, {
+      const res = await axios.put(`${backendUrl}/api/orders/cancel/${id}`, {}, {
         withCredentials: true,
       });
       alert(res.data.message);

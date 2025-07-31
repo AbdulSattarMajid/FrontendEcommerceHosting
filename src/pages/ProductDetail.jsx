@@ -17,13 +17,13 @@ const ProductDetail = () => {
     addToCart(product);
     toast.info("Product Added")
   };
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     if (!product) {
       const fetchProduct = async () => {
         try {
-          const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+          const res = await axios.get(`${backendUrl}/api/products/${id}`);
           setProduct(res.data.product);
         } catch (err) {
           setError("Product not found");

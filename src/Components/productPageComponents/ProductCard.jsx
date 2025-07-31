@@ -13,7 +13,7 @@ const ProductCard = ({ product }) => {
   const randomRating = (Math.random() * 2 + 3).toFixed(1);
   const [wishlisted, setWishlisted] = useState(false);
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const backendUrl = import.meta.env.VITE_API_BASE_URL ;
 
   useEffect(() => {
     const checkWishlistStatus = async () => {

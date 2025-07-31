@@ -5,7 +5,7 @@ import ProductCard from "../../productPageComponents/ProductCard";
 const CustomerWishlist = () => {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const backendUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchWishlist = async () => {
