@@ -15,10 +15,11 @@ import Profile from "./pages/Profile";
 import Contact from "./pages/Contact";
 
 // Components
-import Navbar from "./Components/landingPageComponents/Navbar";
+import Navbar from "./Components/LandingPageComponents/Navbar";
 import ForgotPassword from "./Components/authComponents/ForgetPassword";
 import ResetPassword from "./Components/authComponents/ResetPassword";
-import CartPage from "./pages/CartPage";
+import Cart from "./pages/Cart";
+// import CartPage from "./pages/Cartpage";
 
 const backendUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
@@ -53,10 +54,10 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
-        <Route path="/product" element={<CategoryPage />} />
+        <Route path="/product" element={<CategoryPage user={user}/>} />
         <Route path="/product/:title" element={<ProductDetail />} />
         <Route path="/contact" element={<Contact/>} />
-        <Route path="/cart" element={<CartPage/>} />
+        <Route path="/cart" element={<Cart/>} />
         {/* Dashboard layout with nested routes handled in Profile */}
         <Route path="/dashboard/*" element={<Profile user={user} />} />
       </Routes>

@@ -4,7 +4,7 @@ import { ShoppingCart, Menu, X } from "lucide-react";
 import ProfileDropdown from "./ProfileDropdown";
 import axios from "axios";
 
-const backendUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
 const Navbar = ({ user, setUser }) => {
   const [count, setCount] = useState(4);
@@ -149,8 +149,8 @@ const Navbar = ({ user, setUser }) => {
           <Link to="/cart" className="relative group">
             <ShoppingCart className="w-6 h-6 text-gray-800 group-hover:text-blue-600 transition" />
             <span className="absolute -top-2 -right-2 text-xs bg-red-600 text-white rounded-full px-1.5 font-semibold shadow-sm">
-              {count}
-            </span>
+{/*            /   {count}
+ */}            </span>
           </Link>
         </div>
       </div>

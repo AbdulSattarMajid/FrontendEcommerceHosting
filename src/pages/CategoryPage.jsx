@@ -2,31 +2,44 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ProductCard from "../Components/productPageComponents/ProductCard";
 import CategoryFilter from "../Components/productPageComponents/CategoryFilter";
-const Products = () => {
+const Products = ({user}) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const backendUrl = import.meta.env.VITE_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          axios.get(`${backendUrl}/products/all`),
-          axios.get(`${backendUrl}/categories/get`)
-        ]);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [productsRes, categoriesRes] = await Promise.all([
+        axios.get(`${backendUrl}/products/all`),
+        axios.get(`${backendUrl}/categories/get`)
+      ]);
 
-        if (productsRes.data.success) setProducts(productsRes.data.products);
-        console.log(productsRes)
-        if (categoriesRes.data.success) setCategories(categoriesRes.data.categories);
-      } catch (err) {
-        console.error("Failed to fetch data:", err);
+      if (productsRes.data.success) {
+        const allProducts = productsRes.data.products;
+
+        // ✅ Filter out current user's own products (by seller._id)
+        const filtered = user
+          ? allProducts.filter(product => product.seller?._id !== user._id)
+          : allProducts;
+
+        setProducts(filtered);
       }
-    };
 
-    fetchData();
-  }, [backendUrl]);
+      if (categoriesRes.data.success) {
+        setCategories(categoriesRes.data.categories);
+      }
+
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
+    }
+  };
+
+  fetchData();
+}, [backendUrl, user]);
+
 
   const handleCategoryChange = (category) => {
     setSelectedCategories((prev) =>

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cart from "../Images/exploreImages/cart.svg";
+import { useCart } from "../Components/cartComponents/CartContext";
+import { toast } from 'react-toastify'
 
 const ProductDetail = () => {
   const location = useLocation();
@@ -10,13 +12,18 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(location.state?.product || null);
   const [loading, setLoading] = useState(!location.state?.product);
   const [error, setError] = useState(null);
-  const backendUrl = import.meta.env.VITE_API_BASE_URL;
+  const { addToCart } = useCart(); // ✅ Use cart context  
+  const handleAddToCart = () => {
+    addToCart(product);
+    toast.info("Product Added")
+  };
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     if (!product) {
       const fetchProduct = async () => {
         try {
-          const res = await axios.get(`${backendUrl}/api/products/${id}`);
+          const res = await axios.get(`http://localhost:5000/api/products/${id}`);
           setProduct(res.data.product);
         } catch (err) {
           setError("Product not found");
@@ -56,7 +63,8 @@ const ProductDetail = () => {
         {/* Product Image */}
         <div className="w-full max-w-[520px] h-[520px] bg-gray-100 rounded-xl shadow-lg flex items-center justify-center overflow-hidden mx-auto">
           <img
-            src={`${backendUrl}/${product.image?.startsWith('uploads') ? product.image : 'uploads/' + product.image}`} alt={product.name}
+            src={product.image}
+            alt={product.name}
             className="max-w-full max-h-full object-contain transition-transform duration-300 hover:scale-105"
           />
         </div>
@@ -92,7 +100,9 @@ const ProductDetail = () => {
             {product.description}
           </p>
 
-          <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-full shadow-md transition-transform hover:scale-105">
+          <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-full shadow-md transition-transform hover:scale-105"
+            onClick={handleAddToCart}
+          >
             <img src={Cart} alt="Cart" className="w-5 h-5" />
             Add to Cart
           </button>
