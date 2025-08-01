@@ -18,6 +18,10 @@ import CourierDeliveries from "../Components/profileComponents/Courier/CourierDe
 import CourierOverview from "../Components/profileComponents/Courier/CourierOverview";
 import SellerEditProduct from "../Components/profileComponents/Seller/SellerEditProduct";
 import CCart from "../Components/profileComponents/Customer/CustomerCart";
+import AdminOverview from "../Components/profileComponents/Admin/AdminOverview";
+import AdminUsers from "../Components/profileComponents/Admin/AdminUsers";
+import AdminProducts from "../Components/profileComponents/Admin/AdminProducts";
+import AdminOrders from "../Components/profileComponents/Admin/AdminOrders";
 
 const Profile = ({ user }) => {
   if (!user) return <Navigate to="/login" />;
@@ -48,6 +52,14 @@ const Profile = ({ user }) => {
             <Route path="overview" element={<CourierOverview user={user} />} />
             <Route path="deliveries" element={<CourierDeliveries />} />
           </>
+        )}
+        {user.role==="Admin" &&(<>
+          <Route path="overview" element={<AdminOverview />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="orders" element={<AdminOrders/>} />
+        </>
+
         )}
       </Routes>
     </DashboardLayout>

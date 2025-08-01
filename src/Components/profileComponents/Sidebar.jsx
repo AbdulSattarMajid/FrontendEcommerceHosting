@@ -3,28 +3,36 @@ import { Link } from 'react-router-dom';
 const Sidebar = ({ role }) => {
   const linkClass = "block hover:text-blue-600 transition text-gray-800 font-medium";
 
-  const linksByRole = {
-    Customer: [
-      { label: "Overview", href: "/dashboard/overview" },
-      { label: "Orders", href: "/dashboard/orders" },
-      { label: "Wishlist", href: "/dashboard/wishlist" },
-      { label: "Cart", href: "/dashboard/cart" },
-      { label: "Settings", href: "/dashboard/settings" },
-    ],
-    Seller: [
-      { label: "Overview", href: "/dashboard/overview" },
-      { label: "Add Product", href: "/dashboard/add-product" },
-      { label: "All Products", href: "/dashboard/all-products" },
-      { label: "Orders Received", href: "/dashboard/orders-received" },
-      { label: "Settings", href: "/dashboard/settings" },
-    ],
-    Courier: [
-      { label: "Overview", href: "/dashboard/overview" },
-      { label: "Assigned Deliveries", href: "/dashboard/assigned" },
-      { label: "Delivery History", href: "/dashboard/history" },
-      { label: "Settings", href: "/dashboard/settings" },
-    ],
-  };
+const linksByRole = {
+  Customer: [
+    { label: "Overview", href: "/dashboard/overview" },
+    { label: "Orders", href: "/dashboard/orders" },
+    { label: "Wishlist", href: "/dashboard/wishlist" },
+    { label: "Cart", href: "/dashboard/cart" },
+    { label: "Settings", href: "/dashboard/settings" },
+  ],
+  Seller: [
+    { label: "Overview", href: "/dashboard/overview" },
+    { label: "Add Product", href: "/dashboard/add-product" },
+    { label: "All Products", href: "/dashboard/all-products" },
+    { label: "Orders Received", href: "/dashboard/orders-received" },
+    { label: "Settings", href: "/dashboard/settings" },
+  ],
+  Courier: [
+    { label: "Overview", href: "/dashboard/overview" },
+    { label: "Assigned Deliveries", href: "/dashboard/assigned" },
+    { label: "Delivery History", href: "/dashboard/history" },
+    { label: "Settings", href: "/dashboard/settings" },
+  ],
+  Admin: [
+    { label: "Overview", href: "/dashboard/overview" },
+    { label: "All Users", href: "/dashboard/users" },
+    { label: "All Products", href: "/dashboard/products" },
+    { label: "All Orders", href: "/dashboard/orders" },
+    { label: "Settings", href: "/dashboard/settings" },
+  ],
+};
+
 
   const links = linksByRole[role] || [];
 

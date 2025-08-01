@@ -4,17 +4,41 @@ import { ShoppingCart, Menu, X } from "lucide-react";
 import ProfileDropdown from "./ProfileDropdown";
 import axios from "axios";
 
-const backendUrl = import.meta.env.VITE_API_BASE_URL ;
+
+const backendUrl = import.meta.env.VITE_API_BASE_URL;
 
 const Navbar = ({ user, setUser }) => {
-  const [count, setCount] = useState(4);
+  const [count] = useState(4);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const [searchInput, setSearchInput] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+
   const dropdownRef = useRef(null);
   const profileRef = useRef(null);
+  const suggestionBoxRef = useRef(null);
   const navigate = useNavigate();
+
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get(`${backendUrl}/api/products/categories/get`);
+        if (res.data.success) {
+          setCategories(res.data.categories);
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -24,11 +48,34 @@ const Navbar = ({ user, setUser }) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setShowProfile(false);
       }
+      if (suggestionBoxRef.current && !suggestionBoxRef.current.contains(e.target)) {
+        setSuggestions([]);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (!searchInput) return setSuggestions([]);
+      try {
+        const res = await axios.get(`${backendUrl}/api/products/search`, {
+          params: { q: searchInput },
+        });
+        setSuggestions(res.data.products);
+      } catch (err) {
+        console.error("Suggestion fetch failed:", err);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchSuggestions();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchInput]);
 
   const handleLogout = async () => {
     try {
@@ -37,6 +84,55 @@ const Navbar = ({ user, setUser }) => {
       setUser(null);
     } catch (err) {
       console.error("Logout failed", err);
+    }
+  };
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+
+    const query = searchInput.trim();
+    if (!query) return;
+
+    try {
+      const res = await axios.get(
+        `${backendUrl}/api/products/search?q=${encodeURIComponent(query)}`
+      );
+
+      const foundProducts = res.data.products;
+
+      if (foundProducts.length > 0) {
+        navigate(`/product?search=${encodeURIComponent(query)}`);
+      } else {
+        alert("No products found.");
+      }
+
+      setSearchInput(""); // ✅ Clear input
+      setSuggestions([]);
+    } catch (err) {
+      console.error("Search error:", err);
+      alert("Search failed. Please try again.");
+    }
+  };
+
+
+
+  const handleSuggestionClick = async (name) => {
+    setSearchInput(name);
+    try {
+      const res = await axios.get(`${backendUrl}/api/search`, {
+        params: { q: name },
+      });
+      const foundProducts = res.data.products;
+
+      if (foundProducts.length === 1) {
+        navigate(`/product/${foundProducts[0]._id}`);
+      } else {
+        navigate(`/product?search=${encodeURIComponent(name)}`);
+      }
+
+      setSuggestions([]);
+    } catch (err) {
+      console.error("Search failed:", err);
     }
   };
 
@@ -52,7 +148,6 @@ const Navbar = ({ user, setUser }) => {
             eShop
           </Link>
 
-          {/* Hamburger Menu (mobile) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden text-gray-700 hover:text-blue-600"
@@ -74,11 +169,12 @@ const Navbar = ({ user, setUser }) => {
                   {["Fashion", "Sports", "Gaming"].map((cat) => (
                     <Link
                       key={cat}
-                      to={`/category/${cat.toLowerCase()}`}
+                      to={`/products?category=${encodeURIComponent(cat.toLowerCase())}`}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition"
                     >
                       {cat}
                     </Link>
+
                   ))}
                 </div>
               )}
@@ -94,15 +190,39 @@ const Navbar = ({ user, setUser }) => {
         </div>
 
         {/* Desktop Search */}
-        <div className="hidden md:flex flex-grow max-w-md mx-6">
-          <input
-            type="text"
-            placeholder="Search for products..."
-            className="w-full px-4 py-2 text-sm border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          />
-          <button className="bg-blue-600 px-4 text-white text-sm font-medium rounded-r-md hover:bg-blue-700 transition">
-            Search
-          </button>
+        <div className="hidden md:flex flex-grow max-w-md mx-6 relative">
+          <form onSubmit={handleSearchSubmit} className="w-full flex">
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search for products..."
+              className="w-full px-4 py-2 text-sm border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 px-4 text-white text-sm font-medium rounded-r-md hover:bg-blue-700 transition"
+            >
+              Search
+            </button>
+          </form>
+
+          {suggestions.length > 0 && (
+            <div
+              ref={suggestionBoxRef}
+              className="absolute top-full left-0 right-0 bg-white shadow-md border rounded-b-md z-50 max-h-60 overflow-y-auto"
+            >
+              {suggestions.map((s) => (
+                <div
+                  key={s._id}
+                  className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 cursor-pointer"
+                  onClick={() => handleSuggestionClick(s.name)}
+                >
+                  {s.name}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right Side */}
@@ -149,8 +269,7 @@ const Navbar = ({ user, setUser }) => {
           <Link to="/cart" className="relative group">
             <ShoppingCart className="w-6 h-6 text-gray-800 group-hover:text-blue-600 transition" />
             <span className="absolute -top-2 -right-2 text-xs bg-red-600 text-white rounded-full px-1.5 font-semibold shadow-sm">
-{/*            /   {count}
- */}            </span>
+            </span>
           </Link>
         </div>
       </div>
@@ -158,11 +277,32 @@ const Navbar = ({ user, setUser }) => {
       {/* Mobile Nav Links */}
       {mobileMenuOpen && (
         <div className="md:hidden px-4 pb-4 space-y-2">
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          />
+          <form onSubmit={handleSearchSubmit}>
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search products..."
+              className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+          </form>
+
+          {suggestions.length > 0 && (
+            <div
+              ref={suggestionBoxRef}
+              className="bg-white shadow-md border rounded-md z-50 max-h-60 overflow-y-auto"
+            >
+              {suggestions.map((s) => (
+                <div
+                  key={s._id}
+                  className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 cursor-pointer"
+                  onClick={() => handleSuggestionClick(s.name)}
+                >
+                  {s.name}
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="flex flex-col gap-2 mt-3">
             <Link to="/product" className="text-sm font-medium text-gray-700 hover:text-blue-600">
@@ -180,7 +320,7 @@ const Navbar = ({ user, setUser }) => {
             </button>
             {showDropdown && (
               <div className="ml-2 space-y-1">
-                {["Fashion", "Sports", "Gaming"].map((cat) => (
+                {categories.map((cat) => (
                   <Link
                     key={cat}
                     to={`/category/${cat.toLowerCase()}`}
