@@ -35,7 +35,7 @@ const AdminProducts = () => {
                                 <td className="px-4 py-2">
                                     {product.seller ? `${product.seller.name} ` : 'N/A'}
                                 </td>
-                                <td>{product.seller.email}</td>
+                                    {product.seller?.email || 'N/A'}
                             </tr>
                         ))}
                     </tbody>
