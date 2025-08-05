@@ -29,6 +29,7 @@ const linksByRole = {
     { label: "All Users", href: "/dashboard/users" },
     { label: "All Products", href: "/dashboard/products" },
     { label: "All Orders", href: "/dashboard/orders" },
+    { label: "Assign Courier", href: "/dashboard/assign" },
     { label: "Settings", href: "/dashboard/settings" },
   ],
 };

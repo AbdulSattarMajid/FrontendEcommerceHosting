@@ -4,24 +4,29 @@ import DashboardLayout from "../Components/profileComponents/DashboardLayout";
 
 // Seller components
 import SellerAllProducts from "../Components/profileComponents/Seller/SellerAllProducts";
-import SellerOverview from "../Components/profileComponents/Seller/SellerOverview";
 import SellerAddProduct from "../Components/profileComponents/Seller/SellerAddProduct";
 import SellerOrdersReceived from "../Components/profileComponents/Seller/SellerOrdersReceived";
+import SellerEditProduct from "../Components/profileComponents/Seller/SellerEditProduct";
 
 // Customer components
-import CustomerOverview from "../Components/profileComponents/Customer/CustomerOverview";
 import CustomerOrders from "../Components/profileComponents/Customer/CustomerOrders";
 import CustomerWishlist from "../Components/profileComponents/Customer/CustomerWishlist";
 
 // Courier components
-import CourierDeliveries from "../Components/profileComponents/Courier/CourierDeliveries";
-import CourierOverview from "../Components/profileComponents/Courier/CourierOverview";
-import SellerEditProduct from "../Components/profileComponents/Seller/SellerEditProduct";
+import CourierAssigned from "../Components/profileComponents/Courier/CourierAssigned";
+import CourierHistory from "../Components/profileComponents/Courier/CourierHistory";
+
+
 import CCart from "../Components/profileComponents/Customer/CustomerCart";
+import SettingsPage from "../Components/profileComponents/SettingsPage";
+import Overview from "../Components/profileComponents/Overview";
+
+//Admin components
 import AdminOverview from "../Components/profileComponents/Admin/AdminOverview";
 import AdminUsers from "../Components/profileComponents/Admin/AdminUsers";
 import AdminProducts from "../Components/profileComponents/Admin/AdminProducts";
 import AdminOrders from "../Components/profileComponents/Admin/AdminOrders";
+import AdminAssignCouriers from "../Components/profileComponents/Admin/AdminAssignCouriers";
 
 const Profile = ({ user }) => {
   if (!user) return <Navigate to="/login" />;
@@ -31,33 +36,42 @@ const Profile = ({ user }) => {
       <Routes>
         {user.role === "Seller" && (
           <>
-            <Route path="overview" element={<SellerOverview user={user} />} />
+            <Route path="overview" element={<Overview user={user} />} />
             <Route path="add-product" element={<SellerAddProduct />} />
             <Route path="all-products" element={<SellerAllProducts user={user} />} />
-            <Route path="edit-product/:id" element={<SellerEditProduct user={user} />} /> 
+            <Route path="edit-product/:id" element={<SellerEditProduct user={user} />} />
             <Route path="orders-received" element={<SellerOrdersReceived />} />
+            <Route path="settings" element={<SettingsPage user={user} />} />
           </>
         )}
         {user.role === "Customer" && (
           <>
-            <Route path="overview" element={<CustomerOverview user={user} />} />
+            <Route path="overview" element={<Overview user={user} />} />
             <Route path="orders" element={<CustomerOrders />} />
             <Route path="wishlist" element={<CustomerWishlist />} />
             <Route path="cart" element={<CCart />} />
+            <Route path="settings" element={<SettingsPage user={user} />} />
+
 
           </>
         )}
         {user.role === "Courier" && (
           <>
-            <Route path="overview" element={<CourierOverview user={user} />} />
-            <Route path="deliveries" element={<CourierDeliveries />} />
+            <Route path="overview" element={<Overview user={user} />} />
+            <Route path="assigned" element={<CourierAssigned />} />
+            <Route path="history" element={<CourierHistory />} />
+            <Route path="settings" element={<SettingsPage user={user} />} />
+
           </>
         )}
-        {user.role==="Admin" &&(<>
+        {user.role === "Admin" && (<>
           <Route path="overview" element={<AdminOverview />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="assign" element={<AdminAssignCouriers/>} />
           <Route path="products" element={<AdminProducts />} />
-          <Route path="orders" element={<AdminOrders/>} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="settings" element={<SettingsPage user={user} />} />
+
         </>
 
         )}
