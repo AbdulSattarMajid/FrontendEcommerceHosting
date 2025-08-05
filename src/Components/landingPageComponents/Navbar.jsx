@@ -8,7 +8,6 @@ import axios from "axios";
 const backendUrl = import.meta.env.VITE_API_BASE_URL;
 
 const Navbar = ({ user, setUser }) => {
-  const [count] = useState(4);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -38,6 +37,19 @@ const Navbar = ({ user, setUser }) => {
 
     fetchCategories();
   }, []);
+
+
+
+
+
+
+  const handleCategoryClick = () => {
+  setShowDropdown(false);
+  setMobileMenuOpen(false);
+};
+
+
+
 
 
   useEffect(() => {
@@ -169,7 +181,8 @@ const Navbar = ({ user, setUser }) => {
                   {["Fashion", "Sports", "Gaming"].map((cat) => (
                     <Link
                       key={cat}
-                      to={`/products?category=${encodeURIComponent(cat.toLowerCase())}`}
+                      to={`/product?category=${encodeURIComponent(cat.toLowerCase())}`}
+                       onClick={handleCategoryClick}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition"
                     >
                       {cat}
@@ -323,7 +336,7 @@ const Navbar = ({ user, setUser }) => {
                 {categories.map((cat) => (
                   <Link
                     key={cat}
-                    to={`/category/${cat.toLowerCase()}`}
+                      to={`/product?category=${encodeURIComponent(cat.toLowerCase())}`}
                     className="block px-2 text-sm text-gray-700 hover:text-blue-600"
                   >
                     {cat}
