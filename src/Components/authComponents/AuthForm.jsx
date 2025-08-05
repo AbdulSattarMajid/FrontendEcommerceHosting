@@ -4,9 +4,11 @@ import { assets } from "../../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
 import axios from "axios";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const backendUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+
 const AuthForm = ({
   mode,
   onSubmit,
@@ -26,6 +28,8 @@ const AuthForm = ({
   setUser
 }) => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -46,20 +50,19 @@ const AuthForm = ({
                   onSuccess={async (credentialResponse) => {
                     try {
                       const { credential } = credentialResponse;
-                      if (!role) {
+                      if (!role && mode !== "Login") {
                         toast.error("Please select a role before using Google Signup.");
-                        navigate("/signup")
+                        navigate("/signup");
                         return;
                       }
                       const { data } = await axios.post(
                         `${backendUrl}/api/users/auth/google`,
-                        { token: credential,role },
+                        { token: credential, role },
                         {
                           headers: { 'Content-Type': 'application/json' },
                           withCredentials: true,
                         }
                       );
-
                       if (data?.user) {
                         setUser(data.user);
                         navigate("/");
@@ -70,7 +73,6 @@ const AuthForm = ({
                       console.error("Google login failed:", err);
                     }
                   }}
-
                   onError={() => {
                     console.log("Login Failed");
                   }}
@@ -118,32 +120,48 @@ const AuthForm = ({
             />
           </div>
 
-          <div className="border border-gray-300 px-6 py-3 flex items-center gap-3 rounded-full mt-4">
+          {/* Password input with show/hide */}
+          <div className="border border-gray-300 px-6 py-3 flex items-center gap-3 rounded-full mt-4 relative">
             <img src={assets.lock_icon} alt="Password" className="w-5 h-5" />
             <input
               onChange={(e) => setPassword(e.target.value)}
               value={password}
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               className="w-full focus:outline-none"
               minLength={6}
               required
             />
+            <span
+              className="absolute right-5 cursor-pointer text-gray-500"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
+
+          {/* Confirm Password with toggle */}
           {mode === "Signup" && (
-            <div className="border border-gray-300 px-6 py-3 flex items-center gap-3 rounded-full mt-4">
+            <div className="border border-gray-300 px-6 py-3 flex items-center gap-3 rounded-full mt-4 relative">
               <img src={assets.lock_icon} alt="Confirm Password" className="w-5 h-5" />
               <input
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 value={confirmPassword}
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 className="w-full focus:outline-none"
                 minLength={6}
                 required
               />
+              <span
+                className="absolute right-5 cursor-pointer text-gray-500"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
           )}
+
           {mode === "Signup" && (
             <div className="mt-4">
               <label className="block text-sm font-medium mb-2">Signup as:</label>
@@ -162,17 +180,15 @@ const AuthForm = ({
                   </label>
                 ))}
               </div>
-
-              {/* Google Login - OUTSIDE the map */}
-
             </div>
           )}
 
-
           {mode === "Login" && (
-            <Link to="/forgot-password">   <p className="text-sm text-red-600 my-4 cursor-pointer">
-              Forgot password?
-            </p></Link>
+            <Link to="/forgot-password">
+              <p className="text-sm text-red-600 my-4 cursor-pointer">
+                Forgot password?
+              </p>
+            </Link>
           )}
 
           <button

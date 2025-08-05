@@ -3,6 +3,7 @@ import axios from "axios";
 import ProductCard from "../Components/productPageComponents/ProductCard";
 import CategoryFilter from "../Components/productPageComponents/CategoryFilter";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Products = ({ user }) => {
   const backendUrl = import.meta.env.VITE_API_BASE_URL;
@@ -16,7 +17,16 @@ const Products = ({ user }) => {
   const searchQuery =
     new URLSearchParams(location.search).get("search")?.toLowerCase() || "";
 
+ //change to read category from URL
 
+
+useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const categoryParams = params.getAll("category");
+  setSelectedCategories(categoryParams.map(c => c.toLowerCase()));
+}, [location.search]);
+
+  //...........................
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,21 +57,43 @@ const Products = ({ user }) => {
 
     fetchData();
   }, [backendUrl, user]);
+  const navigate = useNavigate();
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
-  };
 
-  const categoryFiltered =
-    selectedCategories.length === 0
-      ? products
-      : products.filter((p) =>
-        p.category.some((cat) => selectedCategories.includes(cat))
-      );
+const handleCategoryChange = (category) => {
+  const params = new URLSearchParams(location.search);
+  const currentCategories = params.getAll("category");
+
+  let updatedCategories;
+  if (currentCategories.includes(category)) {
+    updatedCategories = currentCategories.filter((c) => c !== category);
+  } else {
+    updatedCategories = [...currentCategories, category];
+  }
+
+  // Remove all existing 'category' params
+  params.delete("category");
+
+  // Add updated ones
+  updatedCategories.forEach((cat) => {
+    params.append("category", cat);
+  });
+
+  navigate({ search: params.toString() });
+};
+
+ const categoryFiltered =
+  selectedCategories.length === 0
+    ? products
+    : products.filter((p) => {
+        const prodCategories = Array.isArray(p.category)
+          ? p.category.map((cat) => cat.toLowerCase())
+          : [p.category?.toLowerCase()];
+
+        return selectedCategories.some((selectedCat) =>
+          prodCategories.includes(selectedCat)
+        );
+      });
 
   const finalFiltered = searchQuery
     ? categoryFiltered.filter((p) =>

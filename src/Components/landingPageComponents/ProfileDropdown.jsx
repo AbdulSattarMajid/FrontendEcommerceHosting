@@ -40,10 +40,10 @@ const ProfileDropdown = ({ user, onLogout, onClose }) => {
           <User className="w-4 h-4 text-gray-500" />
           View Profile
         </button></Link>
-        <button className="flex items-center gap-2 w-full p-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">
+       <Link to="/dashboard/settings"> <button className="flex items-center gap-2 w-full p-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">
           <Settings className="w-4 h-4 text-gray-500" />
           Settings
-        </button>
+        </button></Link>
         <button
           onClick={() => {
             Cookies.remove('token');

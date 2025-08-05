@@ -14,7 +14,7 @@ const SellerAddProduct = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const fileInputRef = useRef(null);
-  const backendUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+  const backendUrl = import.meta.env.VITE_API_BASE_URL ;
 
   useEffect(() => {
     axios.get(`${backendUrl}/categories/get`, { withCredentials: true })

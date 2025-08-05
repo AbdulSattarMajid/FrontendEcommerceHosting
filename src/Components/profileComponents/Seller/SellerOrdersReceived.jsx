@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const SellerOrdersReceived = () => {
+  const backendUrl = import.meta.env.VITE_API_BASE_URL;
   const [orders, setOrders] = useState([]);
-  const backendUrl = import.meta.env.VITE_API_BASE_URL ;
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -35,7 +35,13 @@ const SellerOrdersReceived = () => {
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h3 className="text-xl font-semibold text-blue-800">Order ID: {order._id.slice(-6)}</h3>
-                    <p className="text-sm text-gray-600">Customer: <span className="font-medium">{order.user.name}</span> ({order.user.email})</p>
+                    <p className="text-sm text-gray-600">
+                      Customer:{" "}
+                      <span className="font-medium">
+                        {order.user?.name || "Unknown"}
+                      </span>{" "}
+                      ({order.user?.email || "No Email"})
+                    </p>
                     <p className="text-sm text-gray-500">Date: {new Date(order.createdAt).toLocaleString()}</p>
                   </div>
                   <div className="text-right">
