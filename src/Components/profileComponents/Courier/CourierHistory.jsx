@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const CourierHistory = () => {
+const CourierHistory = ({user}) => {
   const [orders, setOrders] = useState([]);
-
+  const backendUrl = import.meta.env.VITE_API_BASE_URL;
   const fetchDeliveredOrders = async () => {
     try {
-      const { data } = await axios.get('/api/orders/courier/assigned', {
+      const { data } = await axios.get(`${backendUrl}/api/orders/courier/${user._id}`, {
         withCredentials: true,
       });
       if (data.success) {
