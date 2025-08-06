@@ -9,6 +9,7 @@ const SellerOrdersReceived = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(`${backendUrl}/api/seller/orders-received`, { withCredentials: true });
+        console.log(res.data)
         setOrders(res.data.orders);
       } catch (err) {
         console.error("Failed to fetch seller orders:", err);
@@ -48,7 +49,7 @@ const SellerOrdersReceived = () => {
                     <span className="text-sm px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">
                       {order.status || "Processing"}
                     </span>
-                    <p className="text-md font-bold mt-1 text-gray-800">{total}Rs</p>
+                    <p className="text-md font-bold mt-1 text-gray-800">{total} Rs</p>
                   </div>
                 </div>
 

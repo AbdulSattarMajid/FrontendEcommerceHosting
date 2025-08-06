@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import {toast} from 'react-toastify'
 const AdminAssignCouriers = () => {
     const backendUrl = import.meta.env.VITE_API_BASE_URL;
     const [orders, setOrders] = useState([]);
@@ -34,7 +34,7 @@ const AdminAssignCouriers = () => {
                 { courierId },
                 { withCredentials: true }
             );
-            alert("Courier assigned!");
+            toast.success("Courier assigned!");
             setOrders(prev => prev.filter(o => o._id !== orderId));
         } catch (err) {
             console.error("Assign courier failed:", err.response?.data || err.message);

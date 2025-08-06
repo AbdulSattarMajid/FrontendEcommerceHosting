@@ -27,9 +27,11 @@ import AdminUsers from "../Components/profileComponents/Admin/AdminUsers";
 import AdminProducts from "../Components/profileComponents/Admin/AdminProducts";
 import AdminOrders from "../Components/profileComponents/Admin/AdminOrders";
 import AdminAssignCouriers from "../Components/profileComponents/Admin/AdminAssignCouriers";
+import CustomerMyReviews from "../Components/profileComponents/Customer/CustomerMyReviews";
+import SellerReviews from "../Components/profileComponents/Seller/SellerReviews";
 
 const Profile = ({ user }) => {
-  if (!user) return <Navigate to="/login" />;
+  if (!user) return <> User not Found</>;
 
   return (
     <DashboardLayout role={user.role}>
@@ -41,6 +43,7 @@ const Profile = ({ user }) => {
             <Route path="all-products" element={<SellerAllProducts user={user} />} />
             <Route path="edit-product/:id" element={<SellerEditProduct user={user} />} />
             <Route path="orders-received" element={<SellerOrdersReceived />} />
+            <Route path="reviews" element={<SellerReviews/>} />
             <Route path="settings" element={<SettingsPage user={user} />} />
           </>
         )}
@@ -51,7 +54,7 @@ const Profile = ({ user }) => {
             <Route path="wishlist" element={<CustomerWishlist />} />
             <Route path="cart" element={<CCart />} />
             <Route path="settings" element={<SettingsPage user={user} />} />
-
+            <Route path="my-reviews" element={<CustomerMyReviews />} />
 
           </>
         )}
@@ -67,7 +70,7 @@ const Profile = ({ user }) => {
         {user.role === "Admin" && (<>
           <Route path="overview" element={<AdminOverview />} />
           <Route path="users" element={<AdminUsers />} />
-          <Route path="assign" element={<AdminAssignCouriers/>} />
+          <Route path="assign" element={<AdminAssignCouriers />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="settings" element={<SettingsPage user={user} />} />

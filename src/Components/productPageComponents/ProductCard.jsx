@@ -10,10 +10,9 @@ import axios from "axios";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
-  const randomRating = (Math.random() * 2 + 3).toFixed(1);
   const [wishlisted, setWishlisted] = useState(false);
 
-  const backendUrl = import.meta.env.VITE_API_BASE_URL ;
+  const backendUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const checkWishlistStatus = async () => {
@@ -54,6 +53,8 @@ const ProductCard = ({ product }) => {
     }
   };
 
+  const averageRating = product.averageRating || 0;
+
   return (
     <div className="bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 p-4 relative group">
       <Link
@@ -81,8 +82,10 @@ const ProductCard = ({ product }) => {
 
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center">
-          <StarRating rating={randomRating} />
-          <span className="text-sm text-gray-500 ml-2">{randomRating}</span>
+          <StarRating rating={averageRating} />
+          <span className="text-sm text-gray-500 ml-2">
+            {averageRating.toFixed(1)}
+          </span>
         </div>
       </div>
 
