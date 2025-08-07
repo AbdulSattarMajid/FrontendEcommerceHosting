@@ -16,7 +16,7 @@ const Chatbot = ({ isOpen, setIsOpen }) => {
     setInput("");
 
     try {
-      const res = await fetch(`${chatBotURL}/ask`, {
+      const res = await fetch("https://chatbotecommerce-07l5.onrender.com/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: input }), // ✅ FIXED
