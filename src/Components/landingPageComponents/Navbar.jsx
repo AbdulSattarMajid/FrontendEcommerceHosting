@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X } from "lucide-react";
+import { ShoppingCart, Menu, X, Bot } from "lucide-react";
 import ProfileDropdown from "./ProfileDropdown";
 import axios from "axios";
 
 
 const backendUrl = import.meta.env.VITE_API_BASE_URL;
 
-const Navbar = ({ user, setUser }) => {
+const Navbar = ({ user, setUser, setIsChatOpen }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -44,9 +44,9 @@ const Navbar = ({ user, setUser }) => {
 
 
   const handleCategoryClick = () => {
-  setShowDropdown(false);
-  setMobileMenuOpen(false);
-};
+    setShowDropdown(false);
+    setMobileMenuOpen(false);
+  };
 
 
 
@@ -182,7 +182,7 @@ const Navbar = ({ user, setUser }) => {
                     <Link
                       key={cat}
                       to={`/product?category=${encodeURIComponent(cat.toLowerCase())}`}
-                       onClick={handleCategoryClick}
+                      onClick={handleCategoryClick}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition"
                     >
                       {cat}
@@ -257,9 +257,14 @@ const Navbar = ({ user, setUser }) => {
             </>
           ) : (
             <>
-              <Link to="/notifications" className="text-sm hover:text-blue-600 font-medium hidden md:inline">
-                🔔
-              </Link>
+              <button
+                onClick={() => setIsChatOpen(prev => !prev)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+                title="Open Chat"
+              >
+                <Bot size={24} />
+              </button>
+
               <div className="relative" ref={profileRef}>
                 <div
                   onClick={() => setShowProfile((prev) => !prev)}
@@ -336,7 +341,7 @@ const Navbar = ({ user, setUser }) => {
                 {categories.map((cat) => (
                   <Link
                     key={cat}
-                      to={`/product?category=${encodeURIComponent(cat.toLowerCase())}`}
+                    to={`/product?category=${encodeURIComponent(cat.toLowerCase())}`}
                     className="block px-2 text-sm text-gray-700 hover:text-blue-600"
                   >
                     {cat}
