@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { ToastContainer } from "react-toastify";
 
@@ -46,11 +46,15 @@ function App() {
 
   // Pages where navbar should not be shown
   const hideNavbarOn = ["/login", "/signup"];
+  const shouldHideNavbar = hideNavbarOn.some(path =>
+    location.pathname.startsWith(path)
+  );
 
   return (
     <>
       <ToastContainer />
-      {!hideNavbarOn.includes(location.pathname) && (
+
+      {!shouldHideNavbar && (
         <Navbar user={user} setUser={setUser} setIsChatOpen={setIsChatOpen} />
       )}
       <Chatbot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
