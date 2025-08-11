@@ -17,14 +17,12 @@ const Products = ({ user }) => {
   const searchQuery =
     new URLSearchParams(location.search).get("search")?.toLowerCase() || "";
 
- //change to read category from URL
-
-
-useEffect(() => {
-  const params = new URLSearchParams(location.search);
-  const categoryParams = params.getAll("category");
-  setSelectedCategories(categoryParams.map(c => c.toLowerCase()));
-}, [location.search]);
+  //change to read category from URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const categoryParams = params.getAll("category");
+    setSelectedCategories(categoryParams.map((c) => c.toLowerCase()));
+  }, [location.search]);
 
   //...........................
   useEffect(() => {
@@ -40,7 +38,7 @@ useEffect(() => {
 
           // ✅ Filter out current user's own products (by seller._id)
           const filtered = user
-            ? allProducts.filter(product => product.seller?._id !== user._id)
+            ? allProducts.filter((product) => product.seller?._id !== user._id)
             : allProducts;
 
           setProducts(filtered);
@@ -49,7 +47,6 @@ useEffect(() => {
         if (categoriesRes.data.success) {
           setCategories(categoriesRes.data.categories);
         }
-
       } catch (err) {
         console.error("Failed to fetch data:", err);
       }
@@ -59,46 +56,45 @@ useEffect(() => {
   }, [backendUrl, user]);
   const navigate = useNavigate();
 
+  const handleCategoryChange = (category) => {
+    const params = new URLSearchParams(location.search);
+    const currentCategories = params.getAll("category");
 
-const handleCategoryChange = (category) => {
-  const params = new URLSearchParams(location.search);
-  const currentCategories = params.getAll("category");
+    let updatedCategories;
+    if (currentCategories.includes(category)) {
+      updatedCategories = currentCategories.filter((c) => c !== category);
+    } else {
+      updatedCategories = [...currentCategories, category];
+    }
 
-  let updatedCategories;
-  if (currentCategories.includes(category)) {
-    updatedCategories = currentCategories.filter((c) => c !== category);
-  } else {
-    updatedCategories = [...currentCategories, category];
-  }
+    // Remove all existing 'category' params
+    params.delete("category");
 
-  // Remove all existing 'category' params
-  params.delete("category");
+    // Add updated ones
+    updatedCategories.forEach((cat) => {
+      params.append("category", cat);
+    });
 
-  // Add updated ones
-  updatedCategories.forEach((cat) => {
-    params.append("category", cat);
-  });
+    navigate({ search: params.toString() });
+  };
 
-  navigate({ search: params.toString() });
-};
+  const categoryFiltered =
+    selectedCategories.length === 0
+      ? products
+      : products.filter((p) => {
+          const prodCategories = Array.isArray(p.category)
+            ? p.category.map((cat) => cat.toLowerCase())
+            : [p.category?.toLowerCase()];
 
- const categoryFiltered =
-  selectedCategories.length === 0
-    ? products
-    : products.filter((p) => {
-        const prodCategories = Array.isArray(p.category)
-          ? p.category.map((cat) => cat.toLowerCase())
-          : [p.category?.toLowerCase()];
-
-        return selectedCategories.some((selectedCat) =>
-          prodCategories.includes(selectedCat)
-        );
-      });
+          return selectedCategories.some((selectedCat) =>
+            prodCategories.includes(selectedCat)
+          );
+        });
 
   const finalFiltered = searchQuery
     ? categoryFiltered.filter((p) =>
-      p.name.toLowerCase().includes(searchQuery)
-    )
+        p.name.toLowerCase().includes(searchQuery)
+      )
     : categoryFiltered;
 
   return (
@@ -115,11 +111,20 @@ const handleCategoryChange = (category) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <aside className="lg:col-span-1">
-          <CategoryFilter
-            categories={categories}
-            selectedCategories={selectedCategories}
-            onChange={handleCategoryChange}
-          />
+          <div className="block lg:hidden mb-4 overflow-x-auto whitespace-nowrap scrollbar-hide">
+            <CategoryFilter
+              categories={categories}
+              selectedCategories={selectedCategories}
+              onChange={handleCategoryChange}
+            />
+          </div>
+          <div className="hidden lg:block">
+            <CategoryFilter
+              categories={categories}
+              selectedCategories={selectedCategories}
+              onChange={handleCategoryChange}
+            />
+          </div>
         </aside>
 
         <section className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">

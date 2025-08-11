@@ -79,7 +79,6 @@ const AuthForm = ({
                   theme="filled_black"
                   size="large"
                   shape="pill"
-                  width="auto"
                 />
               </div>
             </div>
