@@ -38,19 +38,10 @@ const Navbar = ({ user, setUser, setIsChatOpen }) => {
     fetchCategories();
   }, []);
 
-
-
-
-
-
   const handleCategoryClick = () => {
     setShowDropdown(false);
     setMobileMenuOpen(false);
   };
-
-
-
-
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -125,8 +116,6 @@ const Navbar = ({ user, setUser, setIsChatOpen }) => {
       alert("Search failed. Please try again.");
     }
   };
-
-
 
   const handleSuggestionClick = async (name) => {
     setSearchInput(name);
@@ -343,6 +332,10 @@ const Navbar = ({ user, setUser, setIsChatOpen }) => {
                     key={cat}
                     to={`/product?category=${encodeURIComponent(cat.toLowerCase())}`}
                     className="block px-2 text-sm text-gray-700 hover:text-blue-600"
+                    onClick={() => {
+                      handleCategoryClick();
+                      setMobileMenuOpen(false); // ✅ Close mobile menu after selecting
+                    }}
                   >
                     {cat}
                   </Link>
@@ -367,9 +360,6 @@ const Navbar = ({ user, setUser, setIsChatOpen }) => {
               </>
             ) : (
               <>
-                <Link to="/notifications" className="text-sm font-medium text-gray-700 hover:text-blue-600">
-                  Notifications
-                </Link>
                 <button
                   onClick={handleLogout}
                   className="text-sm text-left text-red-600 hover:underline"
