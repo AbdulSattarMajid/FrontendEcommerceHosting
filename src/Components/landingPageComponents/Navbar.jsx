@@ -136,6 +136,10 @@ const Navbar = ({ user, setUser, setIsChatOpen }) => {
       console.error("Search failed:", err);
     }
   };
+  const onClickCategory = (cat) => {
+    handleCategoryClick();
+    navigate(`/product?category=${encodeURIComponent(cat.toLowerCase())}`);
+  };
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white/60 backdrop-blur-lg shadow-sm text-gray-800 transition-all duration-300">
@@ -327,17 +331,16 @@ const Navbar = ({ user, setUser, setIsChatOpen }) => {
             </button>
             {showDropdown && (
               <div className="ml-2 space-y-1">
-                  {["Fashion", "Sports", "Gaming"].map((cat) => (
-                    <Link
-                      key={cat}
-                      to={`/product?category=${encodeURIComponent(cat.toLowerCase())}`}
-                      onClick={handleCategoryClick}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition"
-                    >
-                      {cat}
-                    </Link>
+                {["Fashion", "Sports", "Gaming"].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => onClickCategory(cat)}
+                    className="block px-2 text-sm text-gray-700 hover:text-blue-600 text-left"
+                  >
+                    {cat}
+                  </button>
 
-                  ))}
+                ))}
               </div>
             )}
 
