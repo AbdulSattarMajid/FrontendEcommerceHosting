@@ -2,41 +2,41 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ProductCard from "../Components/productPageComponents/ProductCard";
 import CategoryFilter from "../Components/productPageComponents/CategoryFilter";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Products = ({ user }) => {
   const backendUrl = import.meta.env.VITE_API_BASE_URL;
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false); // Drawer state
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   // ✅ Read from 'search' instead of 'q'
   const searchQuery =
     new URLSearchParams(location.search).get("search")?.toLowerCase() || "";
 
-  //change to read category from URL
+  // Read category from URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const categoryParams = params.getAll("category");
     setSelectedCategories(categoryParams.map((c) => c.toLowerCase()));
   }, [location.search]);
 
-  //...........................
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [productsRes, categoriesRes] = await Promise.all([
           axios.get(`${backendUrl}/products/all`),
-          axios.get(`${backendUrl}/categories/get`)
+          axios.get(`${backendUrl}/categories/get`),
         ]);
 
         if (productsRes.data.success) {
           const allProducts = productsRes.data.products;
 
-          // ✅ Filter out current user's own products (by seller._id)
+          // ✅ Filter out current user's own products
           const filtered = user
             ? allProducts.filter((product) => product.seller?._id !== user._id)
             : allProducts;
@@ -54,7 +54,6 @@ const Products = ({ user }) => {
 
     fetchData();
   }, [backendUrl, user]);
-  const navigate = useNavigate();
 
   const handleCategoryChange = (category) => {
     const params = new URLSearchParams(location.search);
@@ -98,7 +97,7 @@ const Products = ({ user }) => {
     : categoryFiltered;
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-24 pb-16 px-4 sm:px-6 lg:px-16">
+    <div className="min-h-screen bg-gray-100 pt-24 pb-16 px-4 sm:px-6 lg:px-16 relative">
       <h1 className="text-4xl font-bold text-gray-800 mb-10 text-center">
         Explore Products
       </h1>
@@ -111,13 +110,17 @@ const Products = ({ user }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <aside className="lg:col-span-1">
-          <div className="block lg:hidden mb-4 overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <CategoryFilter
-              categories={categories}
-              selectedCategories={selectedCategories}
-              onChange={handleCategoryChange}
-            />
+          {/* Drawer trigger button for mobile */}
+          <div className="block lg:hidden">
+            <button
+              onClick={() => setIsCategoryOpen(true)}
+              className="bg-yellow-500 text-white px-4 py-2 rounded-full shadow mb-4"
+            >
+              Categories
+            </button>
           </div>
+
+          {/* Sidebar filter for desktop */}
           <div className="hidden lg:block">
             <CategoryFilter
               categories={categories}
@@ -139,6 +142,31 @@ const Products = ({ user }) => {
           )}
         </section>
       </div>
+
+      {/* Mobile Category Drawer */}
+      {isCategoryOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-end z-50">
+          <div className="bg-white w-2/3 p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-bold text-lg">Categories</h2>
+              <button
+                onClick={() => setIsCategoryOpen(false)}
+                className="text-red-500 font-bold"
+              >
+                ✕
+              </button>
+            </div>
+            <CategoryFilter
+              categories={categories}
+              selectedCategories={selectedCategories}
+              onChange={(cat) => {
+                handleCategoryChange(cat);
+                setIsCategoryOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

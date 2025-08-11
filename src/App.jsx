@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { ToastContainer } from "react-toastify";
 
@@ -13,20 +13,20 @@ import ProductDetail from "./pages/ProductDetail";
 import CategoryPage from "./pages/CategoryPage";
 import Profile from "./pages/Profile";
 import Contact from "./pages/Contact";
+import Cart from "./pages/Cart";
 
 // Components
 import Navbar from "./Components/landingPageComponents/Navbar";
 import ForgotPassword from "./Components/authComponents/ForgetPassword";
 import ResetPassword from "./Components/authComponents/ResetPassword";
-import Cart from "./pages/Cart";
 import Chatbot from "./Components/Chatbot";
-// import CartPage from "./pages/Cartpage";
 
 const backendUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
 function App() {
   const [user, setUser] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -44,11 +44,17 @@ function App() {
     fetchUser();
   }, []);
 
+  // Pages where navbar should not be shown
+  const hideNavbarOn = ["/login", "/signup"];
+
   return (
-    <BrowserRouter>
+    <>
       <ToastContainer />
-      <Navbar user={user} setUser={setUser} setIsChatOpen={setIsChatOpen} />
+      {!hideNavbarOn.includes(location.pathname) && (
+        <Navbar user={user} setUser={setUser} setIsChatOpen={setIsChatOpen} />
+      )}
       <Chatbot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
+
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />
@@ -61,11 +67,9 @@ function App() {
         <Route path="/product/:title" element={<ProductDetail />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
-        {/* Dashboard layout with nested routes handled in Profile */}
+        {/* Dashboard */}
         <Route path="/dashboard/*" element={<Profile user={user} />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
-
-export default App;
