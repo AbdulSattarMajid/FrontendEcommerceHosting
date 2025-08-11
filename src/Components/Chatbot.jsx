@@ -1,44 +1,46 @@
 import { useEffect, useRef, useState } from "react";
 
 const Chatbot = ({ isOpen, setIsOpen }) => {
-  const chatBotURL=import.meta.env.python_URL;
   const [messages, setMessages] = useState([
     { sender: "bot", text: "Hi! How can I help you today?" },
   ]);
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ Loading state
   const chatEndRef = useRef(null);
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return; // Prevent multiple sends during loading
 
     const updatedMessages = [...messages, { sender: "user", text: input }];
     setMessages(updatedMessages);
     setInput("");
+    setLoading(true); // ✅ Start loading
 
     try {
       const res = await fetch("https://chatbotecommerce-07l5.onrender.com/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: input }), // ✅ FIXED
+        body: JSON.stringify({ question: input }),
       });
 
       const data = await res.json();
       setMessages([
         ...updatedMessages,
-        { sender: "bot", text: data.answer || "No response." }, // ✅ use `data.answer` not `data.reply`
+        { sender: "bot", text: data.answer || "No response." },
       ]);
     } catch (err) {
       setMessages([
         ...updatedMessages,
         { sender: "bot", text: "Sorry, something went wrong." },
       ]);
+    } finally {
+      setLoading(false); // ✅ Stop loading
     }
   };
 
-
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, loading]);
 
   if (!isOpen) return null;
 
@@ -61,14 +63,23 @@ const Chatbot = ({ isOpen, setIsOpen }) => {
           {messages.map((msg, i) => (
             <div
               key={i}
-              className={`max-w-[80%] px-4 py-2 rounded-xl text-sm shadow-sm ${msg.sender === "user"
-                ? "ml-auto bg-blue-600 text-white rounded-br-none"
-                : "mr-auto bg-gray-200 text-gray-800 rounded-bl-none"
-                }`}
+              className={`max-w-[80%] px-4 py-2 rounded-xl text-sm shadow-sm ${
+                msg.sender === "user"
+                  ? "ml-auto bg-blue-600 text-white rounded-br-none"
+                  : "mr-auto bg-gray-200 text-gray-800 rounded-bl-none"
+              }`}
             >
               {msg.text}
             </div>
           ))}
+
+          {/* Bot typing indicator */}
+          {loading && (
+            <div className="mr-auto bg-gray-200 text-gray-800 rounded-bl-none max-w-[80%] px-4 py-2 rounded-xl text-sm shadow-sm italic">
+              Bot is typing...
+            </div>
+          )}
+
           <div ref={chatEndRef} />
         </div>
 
@@ -81,12 +92,18 @@ const Chatbot = ({ isOpen, setIsOpen }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              disabled={loading} // ✅ Disable input while loading
             />
             <button
               onClick={sendMessage}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold shadow transition"
+              disabled={loading} // ✅ Disable button while loading
+              className={`px-4 py-2 rounded-full text-sm font-semibold shadow transition ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
             >
-              Send
+              {loading ? "..." : "Send"}
             </button>
           </div>
         </div>
