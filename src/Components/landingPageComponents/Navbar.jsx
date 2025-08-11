@@ -327,14 +327,14 @@ const Navbar = ({ user, setUser, setIsChatOpen }) => {
             </button>
             {showDropdown && (
               <div className="ml-2 space-y-1">
-                {categories.map((cat) => (
+                {["Fashion", "Sports", "Gaming"].map((cat) => (
                   <Link
                     key={cat}
                     to={`/product?category=${encodeURIComponent(cat.toLowerCase())}`}
                     className="block px-2 text-sm text-gray-700 hover:text-blue-600"
                     onClick={() => {
                       handleCategoryClick();
-                      setMobileMenuOpen(false); // ✅ Close mobile menu after selecting
+                      setMobileMenuOpen(false); // ✅ close menu after selection
                     }}
                   >
                     {cat}
@@ -342,6 +342,7 @@ const Navbar = ({ user, setUser, setIsChatOpen }) => {
                 ))}
               </div>
             )}
+
 
             {!user ? (
               <>
