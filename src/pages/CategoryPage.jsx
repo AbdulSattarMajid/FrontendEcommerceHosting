@@ -9,12 +9,10 @@ const Products = ({ user }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false); // Drawer state
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const location = useLocation();
-  const navigate = useNavigate();
 
-  // ✅ Read from 'search' instead of 'q'
   const searchQuery =
     new URLSearchParams(location.search).get("search")?.toLowerCase() || "";
 
@@ -25,22 +23,20 @@ const Products = ({ user }) => {
     setSelectedCategories(categoryParams.map((c) => c.toLowerCase()));
   }, [location.search]);
 
+  // Fetch data
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [productsRes, categoriesRes] = await Promise.all([
           axios.get(`${backendUrl}/products/all`),
-          axios.get(`${backendUrl}/categories/get`),
+          axios.get(`${backendUrl}/categories/get`)
         ]);
 
         if (productsRes.data.success) {
           const allProducts = productsRes.data.products;
-
-          // ✅ Filter out current user's own products
           const filtered = user
             ? allProducts.filter((product) => product.seller?._id !== user._id)
             : allProducts;
-
           setProducts(filtered);
         }
 
@@ -55,6 +51,8 @@ const Products = ({ user }) => {
     fetchData();
   }, [backendUrl, user]);
 
+  const navigate = useNavigate();
+
   const handleCategoryChange = (category) => {
     const params = new URLSearchParams(location.search);
     const currentCategories = params.getAll("category");
@@ -66,10 +64,7 @@ const Products = ({ user }) => {
       updatedCategories = [...currentCategories, category];
     }
 
-    // Remove all existing 'category' params
     params.delete("category");
-
-    // Add updated ones
     updatedCategories.forEach((cat) => {
       params.append("category", cat);
     });
@@ -97,7 +92,7 @@ const Products = ({ user }) => {
     : categoryFiltered;
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-24 pb-16 px-4 sm:px-6 lg:px-16 relative">
+    <div className="min-h-screen bg-gray-100 pt-24 pb-16 px-4 sm:px-6 lg:px-16">
       <h1 className="text-4xl font-bold text-gray-800 mb-10 text-center">
         Explore Products
       </h1>
@@ -108,28 +103,27 @@ const Products = ({ user }) => {
         </h2>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        <aside className="lg:col-span-1">
-          {/* Drawer trigger button for mobile */}
-          <div className="block lg:hidden">
-            <button
-              onClick={() => setIsCategoryOpen(true)}
-              className="bg-yellow-500 text-white px-4 py-2 rounded-full shadow mb-4"
-            >
-              Categories
-            </button>
-          </div>
+      {/* Mobile Category Sidebar Button */}
+      <div className="lg:hidden mb-4 flex justify-end">
+        <button
+          onClick={() => setIsMobileSidebarOpen(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md"
+        >
+          Filter Categories
+        </button>
+      </div>
 
-          {/* Sidebar filter for desktop */}
-          <div className="hidden lg:block">
-            <CategoryFilter
-              categories={categories}
-              selectedCategories={selectedCategories}
-              onChange={handleCategoryChange}
-            />
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        {/* Desktop Sidebar */}
+        <aside className="hidden lg:block lg:col-span-1">
+          <CategoryFilter
+            categories={categories}
+            selectedCategories={selectedCategories}
+            onChange={handleCategoryChange}
+          />
         </aside>
 
+        {/* Products Grid */}
         <section className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
           {finalFiltered.length > 0 ? (
             finalFiltered.map((product) => (
@@ -143,27 +137,33 @@ const Products = ({ user }) => {
         </section>
       </div>
 
-      {/* Mobile Category Drawer */}
-      {isCategoryOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-end z-50">
-          <div className="bg-white w-2/3 p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-bold text-lg">Categories</h2>
+      {/* Mobile Sidebar Drawer */}
+      {isMobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          {/* Background overlay */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          ></div>
+
+          {/* Sidebar content */}
+          <div className="relative bg-white w-64 max-w-full h-full shadow-lg z-50 overflow-y-auto">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h2 className="text-lg font-bold">Filter Categories</h2>
               <button
-                onClick={() => setIsCategoryOpen(false)}
-                className="text-red-500 font-bold"
+                onClick={() => setIsMobileSidebarOpen(false)}
+                className="text-gray-500 hover:text-gray-800"
               >
                 ✕
               </button>
             </div>
-            <CategoryFilter
-              categories={categories}
-              selectedCategories={selectedCategories}
-              onChange={(cat) => {
-                handleCategoryChange(cat);
-                setIsCategoryOpen(false);
-              }}
-            />
+            <div className="p-4">
+              <CategoryFilter
+                categories={categories}
+                selectedCategories={selectedCategories}
+                onChange={handleCategoryChange}
+              />
+            </div>
           </div>
         </div>
       )}
